@@ -43,7 +43,7 @@ final class SendinblueTransport extends AbstractTransport
 
     public function __toString(): string
     {
-        return sprintf('sendinblue://%s?sender=%s', $this->getEndpoint(), $this->sender);
+        return \sprintf('sendinblue://%s?sender=%s', $this->getEndpoint(), $this->sender);
     }
 
     public function supports(MessageInterface $message): bool
