@@ -12,6 +12,7 @@
 namespace Symfony\Component\Notifier\Bridge\Sendinblue\Tests;
 
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Notifier\Bridge\Sendinblue\SendinblueTransport;
 use Symfony\Component\Notifier\Exception\TransportException;
 use Symfony\Component\Notifier\Message\ChatMessage;
@@ -19,7 +20,6 @@ use Symfony\Component\Notifier\Message\SmsMessage;
 use Symfony\Component\Notifier\Test\TransportTestCase;
 use Symfony\Component\Notifier\Tests\Transport\DummyMessage;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @group legacy
@@ -49,15 +49,7 @@ final class SendinblueTransportTest extends TransportTestCase
 
     public function testSendWithErrorResponseThrowsTransportException()
     {
-        $response = $this->createMock(ResponseInterface::class);
-        $response->expects($this->exactly(2))
-            ->method('getStatusCode')
-            ->willReturn(400);
-        $response->expects($this->once())
-            ->method('getContent')
-            ->willReturn(json_encode(['code' => 400, 'message' => 'bad request']));
-
-        $client = new MockHttpClient(static fn (): ResponseInterface => $response);
+        $client = new MockHttpClient(new MockResponse(json_encode(['code' => 400, 'message' => 'bad request']), ['http_code' => 400]));
 
         $transport = self::createTransport($client);
 
